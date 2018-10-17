@@ -3,18 +3,33 @@ package lab1.ex2;
 import java.util.ArrayList;
 
 public class Buffer {
+    private String buffer;
+    private boolean flag = true;
 
-    private ArrayList<String> msgList;
-
-    public Buffer () {
-        this.msgList = new ArrayList<>();
+    public synchronized String take() {
+        while (flag) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        flag = true;
+        notifyAll();
+        return buffer;
     }
 
-    public String take() {
-        return msgList.remove(msgList.size() - 1);
-    }
+    public synchronized void put(String msg) {
+        while (!flag) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
 
-    public void put(String msg) {
-        msgList.add(msg);
+        flag = false;
+        buffer = msg;
+        notifyAll();
     }
 }
