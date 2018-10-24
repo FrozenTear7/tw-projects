@@ -1,7 +1,7 @@
 package lab1.ex2;
 
 public class ex1_2 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         int ILOSC = 5;
 
         Buffer buffer = new Buffer();
@@ -14,5 +14,10 @@ public class ex1_2 {
         producerThread2.start();
         consumerThread.start();
         consumerThread2.start();
+
+        producerThread.join();
+        producerThread2.join();
+        consumerThread.join();
+        consumerThread2.join();
     }
 }
