@@ -17,6 +17,7 @@ public class Table {
                 tableTakenCondition.await();
             }
 
+            System.out.println("Table taken by pair " + pair.id);
             tableTaken = true;
             pair.eat();
         } catch (InterruptedException e) {
@@ -24,7 +25,8 @@ public class Table {
         }
     }
 
-    public void finish() {
+    public void finish(Pair pair) {
+        System.out.println("Table freed by by pair " + pair.id);
         tableTakenCondition.signal();
         tableTaken = false;
         lock.unlock();

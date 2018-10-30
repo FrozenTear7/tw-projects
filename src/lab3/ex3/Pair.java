@@ -33,6 +33,6 @@ public class Pair {
 
     public void finish() {
         if (ready == 2)
-            table.finish();
+            table.finish(this);
     }
 }
