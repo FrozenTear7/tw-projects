@@ -2,12 +2,18 @@ package lab3.ex3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Pair {
     private Table table;
     private List<Customer> pair = new ArrayList<>(2);
     public int id;
     public int ready = 0;
+    private Lock lock = new ReentrantLock();
+    private Condition condition = lock.newCondition();
+    public boolean readyToEat = false;
 
     public Pair(Table table, int id) {
         this.table = table;
@@ -20,15 +26,28 @@ public class Pair {
     }
 
     public void sit() {
+        lock.lock();
+
         if (ready == 2) {
             ready = 0;
             table.sitPair(this);
         }
+
+        try {
+            while (!readyToEat)
+                condition.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void eat() {
-        pair.get(0).eat();
-        pair.get(1).eat();
+        lock.lock();
+        readyToEat = true;
+        condition.signalAll();
+        lock.unlock();
     }
 
     public void finish() {

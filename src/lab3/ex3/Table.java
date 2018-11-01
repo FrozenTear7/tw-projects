@@ -22,10 +22,13 @@ public class Table {
             pair.eat();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            lock.unlock();
         }
     }
 
     public void finish(Pair pair) {
+        lock.lock();
         System.out.println("Table freed by by pair " + pair.id);
         tableTakenCondition.signal();
         tableTaken = false;
