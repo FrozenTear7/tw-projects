@@ -5,15 +5,26 @@ import java.util.List;
 
 public class ex3_2 {
     public static void main(String[] args) throws InterruptedException {
-        List<Thread> threadList = new ArrayList<>();
+        int printers = 4;
+        int toPrint = 10;
 
-        threadList.add(new Thread(new PrintingHouse(1)));
-        threadList.add(new Thread(new PrintingHouse(2)));
-        threadList.add(new Thread(new PrintingHouse(3)));
-        threadList.add(new Thread(new PrintingHouse(4)));
-        threadList.add(new Thread(new PrintingHouse(5)));
+        List<Printer> printerList = new ArrayList<>();
+        List<Thread> toPrintList = new ArrayList<>();
 
-        printingHouse.start();
-        printingHouse.join();
+        for (int i = 0; i < printers; i++) {
+            printerList.add(new Printer(i));
+        }
+
+        for (int i = 0; i < toPrint; i++) {
+            toPrintList.add(new Thread(new ToPrint(printerList.get(i % printers), i)));
+        }
+
+        for (int i = 0; i < toPrint; i++) {
+            toPrintList.get(i).start();
+        }
+
+        for (int i = 0; i < toPrint; i++) {
+            toPrintList.get(i).join();
+        }
     }
 }
