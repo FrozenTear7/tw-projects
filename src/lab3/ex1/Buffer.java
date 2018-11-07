@@ -11,7 +11,7 @@ public class Buffer {
     private Condition conditionFull  = lock.newCondition();
     private Condition conditionEmpty  = lock.newCondition();
 
-    void take() {
+    void take(int id) {
         lock.lock();
 
         try {
@@ -20,7 +20,7 @@ public class Buffer {
 
             isItem = false;
 
-            System.out.println("Consumer consumed: " + item);
+            System.out.println("Consumer " + id + " consumed: " + item);
 
             conditionFull.signal();
         } catch (InterruptedException e) {
@@ -30,7 +30,7 @@ public class Buffer {
         }
     }
 
-    void put(int item) {
+    void put(int item, int id) {
         lock.lock();
 
         try {
@@ -41,7 +41,7 @@ public class Buffer {
 
             isItem = true;
 
-            System.out.println("Producer produced: " + item);
+            System.out.println("Producer " + id + " produced: " + item);
 
             conditionEmpty.signal();
         } catch (InterruptedException e) {
