@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ex3_2 {
-    public static int printers = 5;
+    public static int printers = 1;
     public static int toPrint = 5;
     public static void main(String[] args) throws InterruptedException {
         List<Printer> printerList = new ArrayList<>();

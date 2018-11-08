@@ -12,10 +12,8 @@ public class Buffer {
     private int size;
     private List<Integer> itemList = new ArrayList<>(size);
     private List<Lock> lockList = new ArrayList<>(size);
-    private int itemCount = 0;
-    private int writeIndex = 0;
     private Lock lock = new ReentrantLock();
-    private Condition bufferFullCondition = lock.newCondition();
+    private int produced = 0;
     private int consumed = 0;
 
     public Buffer(int size) {
@@ -30,26 +28,20 @@ public class Buffer {
         }
     }
 
-    public void produce(int item) {
-        lock.lock();
+    public void produce() {
+        while (produced < 10) {
+            for (int i = 0; i < size; i++) {
+                if (itemList.get(i) == -1) {
+                    lockList.get(i).lock();
+                    lock.lock();
 
-        try {
-            while (itemCount == size) {
-                bufferFullCondition.await();
+                    itemList.set(i, 0);
+                    produced++;
+
+                    lock.unlock();
+                    lockList.get(i).unlock();
+                }
             }
-
-            itemList.set(writeIndex, item);
-
-            writeIndex++;
-
-            if (writeIndex == size)
-                writeIndex = 0;
-
-            itemCount++;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
         }
     }
 
@@ -60,12 +52,10 @@ public class Buffer {
                     lockList.get(i).lock();
                     lock.lock();
 
-                    itemCount--;
                     System.out.println("Item at: " + i + " = " + itemList.get(i));
                     itemList.set(i, -1);
                     consumed++;
 
-                    bufferFullCondition.signal();
                     lock.unlock();
                     lockList.get(i).unlock();
                 }
