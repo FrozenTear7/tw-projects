@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ex4_1 {
-    static int actions = 10;
-    static int bufferSize = 5;
-    static int middlemanSize = 5;
+    static int actions = 3;
+    static int bufferSize = 1;
+    static int middlemanSize = 1;
 
     public static void main(String[] args) throws InterruptedException {
-
         Buffer buffer = new Buffer(bufferSize);
         Producer producer = new Producer(buffer);
         List<Middleman> middlemanList = new ArrayList<>(middlemanSize);

@@ -6,6 +6,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static lab4.ex1.ex4_1.actions;
 import static lab4.ex1.ex4_1.middlemanSize;
 
 public class Buffer {
@@ -29,7 +30,7 @@ public class Buffer {
     }
 
     public void produce() {
-        while (produced < 10) {
+        while (produced < actions) {
             for (int i = 0; i < size; i++) {
                 if (itemList.get(i) == -1) {
                     lockList.get(i).lock();
@@ -46,7 +47,7 @@ public class Buffer {
     }
 
     public void consume() {
-        while (consumed < 10) {
+        while (consumed < actions) {
             for (int i = 0; i < size; i++) {
                 if (itemList.get(i) == middlemanSize) {
                     lockList.get(i).lock();
@@ -64,7 +65,7 @@ public class Buffer {
     }
 
     public void modify(int id) {
-        while (consumed < 10) {
+        while (consumed < actions) {
             for (int i = 0; i < size; i++) {
                 if (itemList.get(i) == id) {
                     lockList.get(i).lock();
