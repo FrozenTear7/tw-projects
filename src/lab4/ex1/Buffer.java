@@ -10,38 +10,42 @@ import static lab4.ex1.ex4_1.middlemanSize;
 
 public class Buffer {
     private int size;
-    private List<String> itemList = new ArrayList<>(size);
+    private List<Integer> itemList = new ArrayList<>(size);
+    private List<Lock> lockList = new ArrayList<>(size);
     private int itemCount = 0;
     private int writeIndex = 0;
-    private int readIndex = 0;
     private Lock lock = new ReentrantLock();
-    private Condition bufferEmptyCondition = lock.newCondition();
     private Condition bufferFullCondition = lock.newCondition();
-    private Condition myTurnCondition = lock.newCondition();
-    private int currentTurn = 0;
+    private int consumed = 0;
 
     public Buffer(int size) {
         this.size = size;
+
+        for (int i = 0; i < size; i++) {
+            itemList.add(i, -1);
+        }
+
+        for (int i = 0; i < size; i++) {
+            lockList.add(i, new ReentrantLock());
+        }
     }
 
-    public void produce(String item) {
+    public void produce(int item) {
         lock.lock();
 
         try {
-            while(itemCount == size) {
+            while (itemCount == size) {
                 bufferFullCondition.await();
             }
 
-            itemList.add(writeIndex, item);
+            itemList.set(writeIndex, item);
 
             writeIndex++;
 
-            if(writeIndex == size)
+            if (writeIndex == size)
                 writeIndex = 0;
 
             itemCount++;
-
-            bufferEmptyCondition.signal();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -49,57 +53,37 @@ public class Buffer {
         }
     }
 
-    public String consume() {
-        String item = "PROBLEM XD";
+    public void consume() {
+        while (consumed < 10) {
+            for (int i = 0; i < size; i++) {
+                if (itemList.get(i) == middlemanSize) {
+                    lockList.get(i).lock();
+                    lock.lock();
 
-        lock.lock();
+                    itemCount--;
+                    System.out.println("Item at: " + i + " = " + itemList.get(i));
+                    itemList.set(i, -1);
+                    consumed++;
 
-        try {
-            while(currentTurn != middlemanSize) {
-                myTurnCondition.await();
+                    bufferFullCondition.signal();
+                    lock.unlock();
+                    lockList.get(i).unlock();
+                }
             }
-
-            item = itemList.remove(readIndex);
-
-            readIndex++;
-
-            if(readIndex == size)
-                readIndex = 0;
-
-            itemCount--;
-            bufferFullCondition.signal();
-
-            currentTurn = 0;
-            myTurnCondition.signal();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
         }
-
-        return item;
     }
 
     public void modify(int id) {
-        lock.lock();
+        while (consumed < 10) {
+            for (int i = 0; i < size; i++) {
+                if (itemList.get(i) == id) {
+                    lockList.get(i).lock();
 
-        try {
-            while(itemCount == 0) {
-                bufferEmptyCondition.await();
+                    itemList.set(i, itemList.get(i) + 1);
+
+                    lockList.get(i).unlock();
+                }
             }
-
-            while(currentTurn != id) {
-                myTurnCondition.await();
-            }
-
-            itemList.set(readIndex, itemList.get(readIndex) + " " + id);
-
-            currentTurn++;
-            myTurnCondition.signal();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
         }
     }
 }

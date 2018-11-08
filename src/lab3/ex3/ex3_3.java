@@ -17,7 +17,7 @@ public class ex3_3 {
 
         customers.add(0, new Customer("Klemens", pairs.get(0), 0));
         customers.add(1, new Customer("Busio", pairs.get(0), 1));
-        customers.add(2, new Customer("Juzek", pairs.get(1), 0));
+        customers.add(2, new Customer("Grelson xd pyszne.pl", pairs.get(1), 0));
         customers.add(3, new Customer("Arko", pairs.get(1), 1));
         customers.add(4, new Customer("Fafruch", pairs.get(2), 0));
         customers.add(5, new Customer("Pablo", pairs.get(2), 1));

@@ -4,19 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ex3_2 {
+    public static int printers = 5;
+    public static int toPrint = 5;
     public static void main(String[] args) throws InterruptedException {
-        int printers = 4;
-        int toPrint = 10;
-
         List<Printer> printerList = new ArrayList<>();
-        List<Thread> toPrintList = new ArrayList<>();
 
         for (int i = 0; i < printers; i++) {
             printerList.add(new Printer(i));
         }
 
+        Printery printery = new Printery(printerList);
+        List<Thread> toPrintList = new ArrayList<>();
+
         for (int i = 0; i < toPrint; i++) {
-            toPrintList.add(new Thread(new ToPrint(printerList.get(i % printers), i)));
+            toPrintList.add(new Thread(new ToPrint(printery, i)));
         }
 
         for (int i = 0; i < toPrint; i++) {

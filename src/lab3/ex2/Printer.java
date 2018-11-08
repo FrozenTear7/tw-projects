@@ -7,36 +7,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Printer {
     private int myNumber;
-    private Lock lock = new ReentrantLock();
-    private Condition freeCondition = lock.newCondition();
-    private boolean free = true;
 
     public Printer(int myNumber) {
         this.myNumber = myNumber;
     }
 
-    public void print(int toPrintNumber) {
-        lock.lock();
-
+    public void print() {
         try {
-            while(!free) {
-                freeCondition.await();
-            }
-
-            free = false;
-
-            System.out.println("Printer " + myNumber + " gon be printing: " + toPrintNumber);
-
-            TimeUnit.SECONDS.sleep((long)(Math.random() * 5 + 2));
-
-            System.out.println("Printer " + myNumber + " finished printing: " + toPrintNumber);
-
-            free = true;
-            freeCondition.signal();
+            TimeUnit.SECONDS.sleep((long) (Math.random() * 2 + 2));
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            lock.unlock();
         }
     }
 }

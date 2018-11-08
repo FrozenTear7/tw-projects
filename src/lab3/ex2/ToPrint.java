@@ -2,14 +2,14 @@ package lab3.ex2;
 
 public class ToPrint implements Runnable {
     private int toPrintNumber;
-    private Printer printer;
+    private Printery printery;
 
-    public ToPrint(Printer printer, int toPrintNumber) {
-        this.printer = printer;
+    public ToPrint(Printery printery, int toPrintNumber) {
+        this.printery = printery;
         this.toPrintNumber = toPrintNumber;
     }
 
     public void run() {
-        printer.print(toPrintNumber);
+        printery.print(toPrintNumber);
     }
 }
