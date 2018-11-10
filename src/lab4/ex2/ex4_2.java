@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ex4_2 {
-    static int M = 100;
+    static int M = 1000;
     static int bufferSize = 2 * M;
     static int producers = 10;
     static int consumers = 10;
@@ -37,6 +37,9 @@ public class ex4_2 {
             thread.join();
         }
 
+        System.out.println("Producers: " + producers);
+        System.out.println("Consumers: " + consumers);
+        System.out.println("M: " + M);
         System.out.println("Mean team producing: " + meanTimeProduce / producingActions);
         System.out.println("Mean team consuming: " + meanTimeConsume / consumingActions);
     }
