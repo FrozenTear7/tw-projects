@@ -72,7 +72,6 @@ public class Buffer {
 
             bufferFullCondition.signal();
         } catch (InterruptedException e) {
-            e.printStackTrace();
         } finally {
             lock.unlock();
         }

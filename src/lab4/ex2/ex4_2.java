@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ex4_2 {
-    static int M = 1000;
+    static int M = 10;
     static int bufferSize = 2 * M;
     static int producers = 10;
     static int consumers = 10;
@@ -17,23 +17,32 @@ public class ex4_2 {
         Buffer buffer = new Buffer(bufferSize);
         List<Producer> producerList = new ArrayList<>(producers);
         List<Consumer> consumerList = new ArrayList<>(consumers);
-        List<Thread> threads = new ArrayList<>();
+        List<Thread> producerThreads = new ArrayList<>();
+        List<Thread> consumerThreads = new ArrayList<>();
 
         for (int i = 0; i < producers; i++) {
             producerList.add(i, new Producer(buffer, i));
-            threads.add(new Thread(producerList.get(i)));
+            producerThreads.add(new Thread(producerList.get(i)));
         }
 
         for (int i = 0; i < consumers; i++) {
             consumerList.add(i, new Consumer(buffer, i));
-            threads.add(new Thread(consumerList.get(i)));
+            consumerThreads.add(new Thread(consumerList.get(i)));
         }
 
-        for (Thread thread : threads) {
+        for (Thread thread : producerThreads) {
             thread.start();
         }
 
-        for (Thread thread : threads) {
+        for (Thread thread : consumerThreads) {
+            thread.start();
+        }
+
+        for (Thread thread : producerThreads) {
+            thread.join();
+        }
+
+        for (Thread thread : consumerThreads) {
             thread.join();
         }
 
