@@ -23,57 +23,46 @@ public class Mandelbrot extends JFrame {
         ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
 
         int i = 0;
-        int count = getWidth() * getHeight() / NTHREADS;
-        int startX = -1, startY = -1;
+        int count = getWidth() / NTHREADS;
+        int startY = -1;
 
         for (int y = 0; y < getHeight(); y++) {
-            for (int x = 0; x < getWidth(); x++) {
-                if (startX == -1 && startY == -1) {
-                    startX = x;
-                }
-                    startY = y;
-
-                if (++i == count || (x == getWidth() - 1 && y == getHeight() - 1)) {
-                    final int a = startX, b = x, c = startY, d = y;
-                    Future<Integer> future = executor.submit(() -> {
-                        return getPixel(a, b, c, d);
-                    });
-
-                    int iter = 0;
-
-                    try {
-                        iter = future.get();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    I.setRGB(x, y, iter | (iter << 8));
-
-                    startX = -1;
-                    startY = -1;
-                }
-
-                i = i % count;
+            if (startY == -1) {
+                startY = y;
             }
 
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (++i == count || y == getHeight() - 1) {
+                final int a = startY, b = y + 1;
+                Future<Integer> future = executor.submit(() -> {
+                    return getPixel(a, b);
+                });
+
+                int iter = 0;
+
+                try {
+                    iter = future.get();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                startY = -1;
             }
+
+            i = i % count;
         }
 
         executor.shutdown();
     }
 
-    public Integer getPixel(int startX, int x, int startY, int y) {
+    public Integer getPixel(int y, int endY) {
         int iter = 0;
 
-        for (; startY <= y; startY++) {
-            for (; startX <= x; startX++) {
+        for (; y < endY; y++) {
+            for (int x = 0; x < getWidth(); x++) {
                 zx = zy = 0;
-                cX = (startX - 400) / ZOOM;
-                cY = (startY - 300) / ZOOM;
+                cX = (x - 400) / ZOOM;
+                cY = (y - 300) / ZOOM;
                 iter = MAX_ITER;
                 while (zx * zx + zy * zy < 4 && iter > 0) {
                     tmp = zx * zx - zy * zy + cX;
@@ -81,6 +70,8 @@ public class Mandelbrot extends JFrame {
                     zx = tmp;
                     iter--;
                 }
+
+                I.setRGB(x, y, iter | (iter << 8));
             }
         }
 
