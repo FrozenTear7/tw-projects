@@ -13,12 +13,10 @@ public class Producer implements Runnable {
 
     @Override
     public void run() {
-        for (int i = 0; i < Math.random() * M; i++) {
-            long start = System.nanoTime();
-            buffer.produce(id);
-            long elapsedTime = System.nanoTime() - start;
-            meanTimeProduce += elapsedTime;
-            producingActions++;
-        }
+        long start = System.nanoTime();
+        buffer.produce(id);
+        long elapsedTime = System.nanoTime() - start;
+        meanTimeProduce += elapsedTime;
+        producingActions++;
     }
 }

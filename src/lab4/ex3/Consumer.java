@@ -1,6 +1,6 @@
-package lab4.ex2;
+package lab4.ex3;
 
-import static lab4.ex2.ex4_2.*;
+import static lab4.ex3.ex4_3.*;
 
 public class Consumer implements Runnable {
     private Buffer buffer;

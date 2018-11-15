@@ -1,12 +1,12 @@
-package lab4.ex2;
+package lab4.ex3;
 
-import static lab4.ex2.ex4_2.*;
+import static lab4.ex3.ex4_3.*;
 
-public class Consumer implements Runnable {
+public class Producer implements Runnable {
     private Buffer buffer;
     private int id;
 
-    public Consumer(Buffer buffer, int id) {
+    public Producer(Buffer buffer, int id) {
         this.buffer = buffer;
         this.id = id;
     }
@@ -14,9 +14,9 @@ public class Consumer implements Runnable {
     @Override
     public void run() {
         long start = System.nanoTime();
-        buffer.consume(id);
+        buffer.produce(id);
         long elapsedTime = System.nanoTime() - start;
-        meanTimeConsume += elapsedTime;
-        consumingActions++;
+        meanTimeProduce += elapsedTime;
+        producingActions++;
     }
 }

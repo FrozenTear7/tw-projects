@@ -1,13 +1,14 @@
-package lab4.ex2;
+package lab4.ex3;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static lab4.ex2.ex4_2.M;
-import static lab4.ex2.ex4_2.bufferSize;
+import static lab4.ex3.ex4_3.M;
+import static lab4.ex3.ex4_3.bufferSize;
 
 public class Buffer {
     private int size;
@@ -18,6 +19,10 @@ public class Buffer {
     private int writeIndex = 0;
     private int readIndex = 0;
     private int itemCount = 0;
+    private List<Integer> producerWaitingList = new ArrayList<>();
+    private List<Integer> consumerWaitingList = new ArrayList<>();
+    private int producerIndex = 0;
+    private int consumerIndex = 0;
 
     public Buffer(int size) {
         this.size = size;
@@ -32,7 +37,10 @@ public class Buffer {
 
         try {
             for (int i = 0; i < Math.random() * M; i++) {
-                while (itemCount == bufferSize) {
+                int myTicket = ++producerIndex;
+                producerWaitingList.add(myTicket);
+
+                while (itemCount == bufferSize || myTicket != producerWaitingList.get(producerWaitingList.indexOf(Collections.min(producerWaitingList)))) {
                     bufferFullCondition.await();
                 }
 
@@ -45,7 +53,10 @@ public class Buffer {
                 if (writeIndex == bufferSize)
                     writeIndex = 0;
 
-                bufferEmptyCondition.signal();
+                producerWaitingList.remove(producerWaitingList.indexOf(Collections.min(producerWaitingList)));
+
+                bufferEmptyCondition.signalAll();
+                bufferFullCondition.signalAll();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -59,7 +70,10 @@ public class Buffer {
 
         try {
             for (int i = 0; i < Math.random() * M; i++) {
-                while (itemCount == 0) {
+                int myTicket = ++consumerIndex;
+                consumerWaitingList.add(myTicket);
+
+                while (itemCount == 0 || myTicket != consumerWaitingList.get(consumerWaitingList.indexOf(Collections.min(consumerWaitingList)))) {
                     bufferEmptyCondition.await();
                 }
 
@@ -74,10 +88,12 @@ public class Buffer {
                 if (readIndex == bufferSize)
                     readIndex = 0;
 
-                bufferFullCondition.signal();
+                consumerWaitingList.remove(consumerWaitingList.indexOf(Collections.min(consumerWaitingList)));
+
+                bufferEmptyCondition.signalAll();
+                bufferFullCondition.signalAll();
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
         } finally {
             lock.unlock();
         }
