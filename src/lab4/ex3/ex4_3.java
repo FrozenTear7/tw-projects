@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ex4_3 {
-    static int M = 10;
+    static int M = 100000;
     static int bufferSize = 2 * M;
-    static int producers = 10;
-    static int consumers = 10;
+    static int producers = 1000;
+    static int consumers = 1000;
     static long meanTimeProduce = 0;
     static long meanTimeConsume = 0;
     static long producingActions = 0;
